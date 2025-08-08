@@ -20,16 +20,11 @@ Example data
 |--------------------------------------------------
 */
 router.get("/", async (req, res) => {
-  try {
-    const blogs = await Blog.findAll({});
-    if (blogs.length === 0) {
-      return res.status(404).json({ error: "resource not found" });
-    }
-    res.status(200).json(blogs);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+  const blogs = await Blog.findAll({});
+  if (blogs.length === 0) {
+    return res.status(404).json({ error: "resource not found" });
   }
+  return res.status(200).json(blogs);
 });
 
 /**
@@ -45,13 +40,8 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ error: "Missing required fields!" });
   }
   const blog = { id, author, url, title, likes };
-  try {
-    await Blog.create(blog);
-    res.status(201).json(blog);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Server error");
-  }
+  await Blog.create(blog);
+  return res.status(201).json(blog);
 });
 
 /**
@@ -61,13 +51,8 @@ Remove a certain blog
 |--------------------------------------------------
 */
 router.delete("/:id", blogFinder, async (req, res) => {
-  try {
-    await req.blog.destroy();
-    res.status(200).send("Successfull deletion");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
-  }
+  await req.blog.destroy();
+  return res.status(200).send("Successfull deletion");
 });
 
 /**
@@ -85,13 +70,8 @@ router.put("/:id", blogFinder, async (req, res) => {
 
   req.blog.likes = likes;
 
-  try {
-    await req.blog.save();
-    res.status(200).json({ likes: req.blog.likes });
-  } catch (err) {
-    console.error("Error updating resource:", err);
-    res.status(500).send("Internal Server Error");
-  }
+  await req.blog.save();
+  return res.status(200).json({ likes: req.blog.likes });
 });
 
 export default router;
