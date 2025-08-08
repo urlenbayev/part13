@@ -70,4 +70,28 @@ router.delete("/:id", blogFinder, async (req, res) => {
   }
 });
 
+/**
+|--------------------------------------------------
+PUT http://localhost:3001/blogs/:id 
+Update a certain blog's likes count
+|--------------------------------------------------
+*/
+router.put("/:id", blogFinder, async (req, res) => {
+  const { likes } = req.body;
+
+  if (!likes) {
+    return res.status(400).json({ error: "Likes count is required" });
+  }
+
+  req.blog.likes = likes;
+
+  try {
+    await req.blog.save();
+    res.status(200).json({ likes: req.blog.likes });
+  } catch (err) {
+    console.error("Error updating resource:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 export default router;
