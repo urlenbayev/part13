@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import Blog from "../models/Blog.js";
-
+import { blogFinder } from "../middleware/middleware.js";
 /**
 |--------------------------------------------------
 GET http://localhost:3001/blogs
@@ -60,13 +60,9 @@ DELETE http://localhost:3001/blogs/:id
 Remove a certain blog
 |--------------------------------------------------
 */
-router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-
+router.delete("/:id", blogFinder, async (req, res) => {
   try {
-    await Blog.destroy({
-      where: { id },
-    });
+    await req.blog.destroy();
     res.status(200).send("Successfull deletion");
   } catch (error) {
     console.error(error);
