@@ -14,9 +14,11 @@ app.use(morgan("dev"));
 
 // Routers
 import blogsRouter from "./controllers/blogs.js";
+import usersRouter from "./controllers/users.js";
 
 // Endpoints
 app.use("/blogs", blogsRouter);
+app.use("/users", usersRouter);
 
 app.use(errorHandler);
 

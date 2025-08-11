@@ -6,5 +6,14 @@ CREATE TABLE blogs (
   likes INT DEFAULT 0
 );
 
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL CHECK( name <> '' ),
+  username TEXT NOT NULL CHECK( username <> '' ),
+  password_hash TEXT,
+  updated_at TEXT,
+  created_at TEXT
+);
+
 INSERT INTO blogs (id, author, url, title, likes) VALUES (1, 'OBAMA', 'somelink', 'american food', 4);
 INSERT INTO blogs (id, author, url, title) VALUES (2, 'trump', 'somelink', 'german food');

@@ -22,7 +22,7 @@ Example data
 router.get("/", async (req, res) => {
   const blogs = await Blog.findAll({});
   if (blogs.length === 0) {
-    return res.status(404).json({ error: "resource not found" });
+    return res.status(404).json({ error: "Blogs table is empty" });
   }
   return res.status(200).json(blogs);
 });
