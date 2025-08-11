@@ -8,6 +8,7 @@ const User = db.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
+      unique: true,
     },
     name: {
       type: DataTypes.STRING,
@@ -17,6 +18,9 @@ const User = db.define(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+      validate: {
+        isEmail: true,
+      },
     },
     password_hash: {
       type: DataTypes.STRING,

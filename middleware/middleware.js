@@ -18,5 +18,11 @@ export const errorHandler = async (error, req, res, next) => {
   if (error.name === "SequelizeDatabaseError") {
     return res.status(400).json({ error: error.message });
   }
+  if (error.name === "SequelizeValidationError") {
+    return res.status(400).json({ error: error.message });
+  }
+  if (error.name === "SequelizeUniqueConstraintError") {
+    return res.status(409).json({ error: "id or username already exists" });
+  }
   return res.status(500).json({ error: "Server error" });
 };
