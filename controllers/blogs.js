@@ -45,7 +45,12 @@ router.get("/", async (req, res) => {
   } else {
     //Filter by a search word
     const blogs = await Blog.findAll({
-      where: { title: { [Op.iLike]: `%${search}%` } },
+      where: {
+        [Op.or]: [
+          { title: { [Op.iLike]: `%${search}%` } },
+          { author: { [Op.iLike]: `%${search}%` } },
+        ],
+      },
     });
     if (blogs.length === 0) {
       return res.status(404).json({ error: "Blogs do not exist" });
