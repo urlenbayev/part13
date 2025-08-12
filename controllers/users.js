@@ -1,44 +1,61 @@
 import express from "express";
-import User from "../models/User.js";
-import { userFinder } from "../middleware/middleware.js";
+import { User, Blog } from "../models/index.js";
+import { userFinder, tokenExtractor } from "../middleware/middleware.js";
 import bcrypt from "bcrypt";
 const router = express.Router();
 
 /**
 |--------------------------------------------------
-GET http://localhost:3001/users
+GET http://localhost:3001/api/users
 Get all users
 Example data
 [
 	{
-		"id": 1,
-		"name": "Joe Biden",
-		"username": "potus2020",
-		"password_hash": "some generated hash",
-		"created_at": "2025-08-11 11:09:53.435 +00:00",
-		"updated_at": "2025-08-11 11:09:53.435 +00:00"
+		"id": 14,
+		"name": "hillary",
+		"username": "potus1990@gmail.com",
+		"password_hash": "some hash",
+		"created_at": "2025-08-12 01:33:28.749 +00:00",
+		"updated_at": "2025-08-12 01:35:21.345 +00:00",
+    "blogs": 
+    [
+      {
+				"id": 17,
+				"author": "anonymous",
+				"url": "somerandomlink",
+				"title": "Rise flags",
+				"likes": 0,
+				"user_id": 14,
+				"userId": 14
+			},
+      ...
+    ]
 	},
   ...
 ]
 |--------------------------------------------------
 */
-router.get("/", async (req, res) => {
-  const users = await User.findAll({});
+router.get("/", tokenExtractor, async (req, res) => {
+  const users = await User.findAll({
+    include: {
+      model: Blog,
+    },
+  });
 
   if (users.length === 0) {
-    return res.status(404).json({ error: "Users table is empty" });
+    return res.status(404).json({ error: "Users do not exist" });
   }
   return res.status(200).json(users);
 });
 
 /**
 |--------------------------------------------------
-POST http://localhost:3001/users
+POST http://localhost:3001/api/users
 create a new user
 |--------------------------------------------------
 */
 router.post("/", async (req, res) => {
-  const { id, name, username, password } = req.body;
+  const { name, username, password } = req.body;
   if (!password) {
     return res.status(400).json({ error: "Password is required!" });
   }
@@ -46,7 +63,6 @@ router.post("/", async (req, res) => {
   const passwordHash = await bcrypt.hash(password, saltRounds);
 
   const newUser = {
-    id: id,
     name: name,
     username: username,
     password_hash: passwordHash,
@@ -57,15 +73,21 @@ router.post("/", async (req, res) => {
 
 /**
 |--------------------------------------------------
-PUT http://localhost:3001/users/:username
+PUT http://localhost:3001/api/users/:username
 update user's username
 |--------------------------------------------------
 */
-router.put("/:username", userFinder, async (req, res) => {
+router.put("/:username", tokenExtractor, userFinder, async (req, res) => {
   const { username } = req.body;
+  //only authorized owner can update username
+  if (req.user.id !== req.decodedToken.id) {
+    return res.status(403).json({ error: "forbidden" });
+  }
+
   if (!username) {
     return res.status(400).json({ error: "username is required" });
   }
+
   req.user.username = username;
   await req.user.save();
   return res.status(200).json({ username: req.user.username });

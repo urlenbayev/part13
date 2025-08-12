@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import config from "./utils/config.js";
-import { errorHandler } from "./middleware/middleware.js";
+import { errorHandler, unknownEndpoint } from "./middleware/middleware.js";
 const app = express();
 const port = config.port;
 
@@ -15,11 +15,13 @@ app.use(morgan("dev"));
 // Routers
 import blogsRouter from "./controllers/blogs.js";
 import usersRouter from "./controllers/users.js";
+import authRouter from "./controllers/auth.js";
 
 // Endpoints
-app.use("/blogs", blogsRouter);
-app.use("/users", usersRouter);
-
+app.use("/api/blogs", blogsRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/auth", authRouter);
+app.use(unknownEndpoint);
 app.use(errorHandler);
 
 app.listen(port, () => {

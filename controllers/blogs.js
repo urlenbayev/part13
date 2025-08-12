@@ -1,63 +1,80 @@
 import express from "express";
 const router = express.Router();
-import Blog from "../models/Blog.js";
-import { blogFinder } from "../middleware/middleware.js";
+import { User, Blog } from "../models/index.js";
+import { blogFinder, tokenExtractor } from "../middleware/middleware.js";
 /**
 |--------------------------------------------------
-GET http://localhost:3001/blogs
+GET http://localhost:3001/api/blogs
 Get all of the blogs
 Example data
 [
-  {
-		"id": 1,
-		"author": "OBAMA",
-		"url": "somelink",
-		"title": "american food",
-		"likes": 4
-	},
+	{
+		"id": 15,
+		"author": "anonymous",
+		"url": "somerandomlink",
+		"title": "Rise flags",
+		"likes": 0,
+		"user_id": 14,
+		"userId": 14,
+		"user": {
+			"id": 14,
+			"name": "hillary",
+			"username": "potus1990@gmail.com",
+			"password_hash": "some hash",
+			"created_at": "2025-08-12 01:33:28.749 +00:00",
+			"updated_at": "2025-08-12 01:35:21.345 +00:00"
+		},
   ...
 ]
 |--------------------------------------------------
 */
 router.get("/", async (req, res) => {
-  const blogs = await Blog.findAll({});
+  const blogs = await Blog.findAll({
+    include: {
+      model: User,
+    },
+  });
   if (blogs.length === 0) {
-    return res.status(404).json({ error: "Blogs table is empty" });
+    return res.status(404).json({ error: "Blogs do not exist" });
   }
   return res.status(200).json(blogs);
 });
 
 /**
 |--------------------------------------------------
-POST http://localhost:3001/blogs
+POST http://localhost:3001/api/blogs
 Add a new blog
 |--------------------------------------------------
 */
-router.post("/", async (req, res) => {
-  const { id, author, url, title, likes } = req.body;
+router.post("/", tokenExtractor, async (req, res) => {
+  const { author, url, title, likes } = req.body;
 
-  if (!id || !author || !url || !title) {
+  if (!author || !url || !title) {
     return res.status(400).json({ error: "Missing required fields!" });
   }
-  const blog = { id, author, url, title, likes };
+  const blog = { author, url, title, likes, user_id: req.decodedToken.id };
   await Blog.create(blog);
   return res.status(201).json(blog);
 });
 
 /**
 |--------------------------------------------------
-DELETE http://localhost:3001/blogs/:id 
+DELETE http://localhost:3001/api/blogs/:id 
 Remove a certain blog
 |--------------------------------------------------
 */
-router.delete("/:id", blogFinder, async (req, res) => {
+router.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
+  // only authorized one can delete a certain blog
+  if (req.blog.user_id !== req.decodedToken.id) {
+    return res.status(403).json({ error: "forbidden" });
+  }
   await req.blog.destroy();
-  return res.status(200).send("Successfull deletion");
+  return res.status(200).json("Successfull deletion");
 });
 
 /**
 |--------------------------------------------------
-PUT http://localhost:3001/blogs/:id 
+PUT http://localhost:3001/api/blogs/:id 
 Update a certain blog's likes count
 |--------------------------------------------------
 */

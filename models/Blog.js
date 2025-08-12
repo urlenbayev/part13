@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import db from "../utils/db.js";
+import User from "./User.js";
 
 const Blog = db.define(
   "blog",
@@ -23,7 +24,12 @@ const Blog = db.define(
     },
     likes: {
       type: DataTypes.INTEGER,
-      defaultValue: "0",
+      defaultValue: 0,
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: User, key: "id" },
     },
   },
   {
