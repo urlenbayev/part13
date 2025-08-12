@@ -37,6 +37,7 @@ router.get("/", async (req, res) => {
       include: {
         model: User,
       },
+      order: [["likes", "DESC"]],
     });
     if (blogs.length === 0) {
       return res.status(404).json({ error: "Blogs do not exist" });
@@ -51,6 +52,7 @@ router.get("/", async (req, res) => {
           { author: { [Op.iLike]: `%${search}%` } },
         ],
       },
+      order: [["likes", "DESC"]],
     });
     if (blogs.length === 0) {
       return res.status(404).json({ error: "Blogs do not exist" });
