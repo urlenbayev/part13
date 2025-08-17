@@ -68,12 +68,7 @@ Add a new blog
 |--------------------------------------------------
 */
 router.post("/", tokenExtractor, async (req, res) => {
-  const { author, url, title, likes } = req.body;
-
-  if (!author || !url || !title) {
-    return res.status(400).json({ error: "Missing required fields!" });
-  }
-  const blog = { author, url, title, likes, user_id: req.decodedToken.id };
+  const blog = { ...req.body, user_id: req.decodedToken.id };
   await Blog.create(blog);
   return res.status(201).json(blog);
 });

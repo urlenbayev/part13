@@ -14,6 +14,9 @@ const User = db.define(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
     username: {
       type: DataTypes.STRING,
@@ -21,11 +24,15 @@ const User = db.define(
       unique: true,
       validate: {
         isEmail: true,
+        notEmpty: true,
       },
     },
     password_hash: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
   },
   {

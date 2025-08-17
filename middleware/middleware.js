@@ -29,16 +29,10 @@ export const userFinder = async (req, res, next) => {
 
 // eslint-disable-next-line no-unused-vars
 export const errorHandler = async (error, req, res, next) => {
-  if (error.name === "SequelizeDatabaseError") {
+  if (error.name.startsWith("Sequelize")) {
     return res.status(400).json({ error: error.message });
   }
-  if (error.name === "SequelizeValidationError") {
-    return res.status(400).json({ error: error.message });
-  }
-  if (error.name === "SequelizeUniqueConstraintError") {
-    return res.status(409).json({ error: error.message });
-  }
-  return res.status(500).json({ error: "Server error" });
+  return res.status(500).json({ error: error.message });
 };
 
 // eslint-disable-next-line no-unused-vars
