@@ -34,7 +34,8 @@ const Blog = db.define(
   },
   {
     underscored: true,
-    timestamps: false,
+    updatedAt: "updated_at",
+    createdAt: "created_at",
   }
 );
 
