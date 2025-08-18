@@ -40,6 +40,7 @@ const Blog = db.define(
         max: currentYear,
       },
     },
+
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
