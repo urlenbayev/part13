@@ -14,7 +14,6 @@ Example data
 		"id": 14,
 		"name": "hillary",
 		"username": "potus1990@gmail.com",
-		"password_hash": "some hash",
 		"created_at": "2025-08-12 01:33:28.749 +00:00",
 		"updated_at": "2025-08-12 01:35:21.345 +00:00",
     "blogs": 
@@ -37,6 +36,7 @@ Example data
 */
 router.get("/", tokenExtractor, async (req, res) => {
   const users = await User.findAll({
+    attributes: { exclude: ["password_hash"] },
     include: {
       model: Blog,
     },
@@ -77,22 +77,27 @@ Example data
 |--------------------------------------------------
 */
 router.get("/:id", tokenExtractor, async (req, res) => {
-  const { id } = req.params;
-  const result = await User.findByPk(id, {
-    attributes: ["name", "username"],
-    include: [
-      {
-        model: Blog,
-        as: "readings",
-        attributes: { exclude: ["user_id", "created_at", "updated_at"] },
-        through: {
-          model: Reading,
-          as: "readinglists",
-          attributes: ["id", "read"],
+  const { id } = req.params,
+    { read } = req.query,
+    query = {
+      attributes: ["name", "username"],
+      include: [
+        {
+          model: Blog,
+          as: "readings",
+          attributes: { exclude: ["user_id", "created_at", "updated_at"] },
+          through: {
+            model: Reading,
+            as: "readinglists",
+            attributes: ["id", "read"],
+          },
         },
-      },
-    ],
-  });
+      ],
+    };
+  if (read) {
+    query.include[0].through.where = { read: read };
+  }
+  const result = await User.findByPk(id, query);
   res.status(200).json(result);
 });
 /**
@@ -114,8 +119,9 @@ router.post("/", async (req, res) => {
     username: username,
     password_hash: passwordHash,
   };
-  await User.create(newUser);
-  return res.status(201).json(newUser);
+  const addedUser = await User.create(newUser);
+  const { password_hash, ...result } = addedUser.dataValues;
+  return res.status(201).json(result);
 });
 
 /**

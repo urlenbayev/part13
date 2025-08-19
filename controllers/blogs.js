@@ -22,7 +22,6 @@ Example data
 			"id": 14,
 			"name": "hillary",
 			"username": "potus1990@gmail.com",
-			"password_hash": "some hash",
 			"created_at": "2025-08-12 01:33:28.749 +00:00",
 			"updated_at": "2025-08-12 01:35:21.345 +00:00"
 		},
@@ -36,6 +35,7 @@ router.get("/", async (req, res) => {
     const blogs = await Blog.findAll({
       include: {
         model: User,
+        attributes: { exclude: ["password_hash"] },
       },
       order: [["likes", "DESC"]],
     });
@@ -69,8 +69,8 @@ Add a new blog
 */
 router.post("/", tokenExtractor, async (req, res) => {
   const blog = { ...req.body, user_id: req.decodedToken.id };
-  await Blog.create(blog);
-  return res.status(201).json(blog);
+  const result = await Blog.create(blog);
+  return res.status(201).json(result);
 });
 
 /**
