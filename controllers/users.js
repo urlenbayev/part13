@@ -51,10 +51,26 @@ router.get("/", tokenExtractor, async (req, res) => {
 /**
 |--------------------------------------------------
 GET http://localhost:3001/api/users/:id
-Get resource
+Get a certain user with their reading lists
 Example data
 [
   {
+	"name": "Muller",
+	"username": "potus1970@gmail.com",
+	"readings": [
+		{
+			"id": 10,
+			"author": "sadsad",
+			"url": "sasaslink",
+			"title": "sad",
+			"likes": 0,
+			"year": null,
+			"readinglists": {
+				"id": 1,
+				"read": false
+			}
+		}
+	]
   },
   ...
 ]
@@ -71,7 +87,8 @@ router.get("/:id", async (req, res) => {
         attributes: { exclude: ["user_id", "created_at", "updated_at"] },
         through: {
           model: Reading,
-          attributes: [],
+          as: "readinglists",
+          attributes: ["id", "read"],
         },
       },
     ],
