@@ -15,12 +15,12 @@ export const blogFinder = async (req, res, next) => {
 };
 
 export const userFinder = async (req, res, next) => {
-  if (!req.params.username) {
-    return res.status(404).json({ error: "no username in params" });
+  if (req.params.username) {
+    req.user = await User.findOne({
+      where: { username: req.params.username },
+    });
   }
-  req.user = await User.findOne({
-    where: { username: req.params.username },
-  });
+
   if (!req.user) {
     return res.status(404).json({ error: "user does not exist" });
   }
