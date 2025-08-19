@@ -35,6 +35,7 @@ const Reading = db.define(
   },
   {
     underscored: true,
+    timestamps: false,
   }
 );
 

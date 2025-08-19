@@ -1,5 +1,5 @@
 import express from "express";
-import { User, Blog } from "../models/index.js";
+import { User, Blog, Reading } from "../models/index.js";
 import { userFinder, tokenExtractor } from "../middleware/middleware.js";
 import bcrypt from "bcrypt";
 const router = express.Router();
@@ -48,6 +48,36 @@ router.get("/", tokenExtractor, async (req, res) => {
   return res.status(200).json(users);
 });
 
+/**
+|--------------------------------------------------
+GET http://localhost:3001/api/users/:id
+Get resource
+Example data
+[
+  {
+  },
+  ...
+]
+|--------------------------------------------------
+*/
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  const result = await User.findByPk(id, {
+    attributes: ["name", "username"],
+    include: [
+      {
+        model: Blog,
+        as: "readings",
+        attributes: { exclude: ["user_id", "created_at", "updated_at"] },
+        through: {
+          model: Reading,
+          attributes: [],
+        },
+      },
+    ],
+  });
+  res.status(200).json(result);
+});
 /**
 |--------------------------------------------------
 POST http://localhost:3001/api/users

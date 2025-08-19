@@ -35,7 +35,6 @@ export const errorHandler = async (error, req, res, next) => {
   return res.status(500).json({ error: error.message });
 };
 
-// eslint-disable-next-line no-unused-vars
 export const tokenExtractor = async (req, res, next) => {
   const token = req.get("authorization");
 

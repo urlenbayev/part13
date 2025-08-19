@@ -17,12 +17,14 @@ import blogsRouter from "./controllers/blogs.js";
 import usersRouter from "./controllers/users.js";
 import authRouter from "./controllers/auth.js";
 import authorsRouter from "./controllers/authors.js";
+import readingsRouter from "./controllers/readings.js";
 
 // Endpoints
 app.use("/api/blogs", blogsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/authors", authorsRouter);
+app.use("/api/readinglists", readingsRouter);
 
 app.use(unknownEndpoint);
 app.use(errorHandler);
