@@ -29,7 +29,7 @@ Example data
 ]
 |--------------------------------------------------
 */
-router.get("/", async (req, res) => {
+router.get("/", tokenExtractor, async (req, res) => {
   const { search } = req.query;
   if (!search) {
     const blogs = await Blog.findAll({
@@ -94,7 +94,7 @@ PUT http://localhost:3001/api/blogs/:id
 Update a certain blog's likes count
 |--------------------------------------------------
 */
-router.put("/:id", blogFinder, async (req, res) => {
+router.put("/:id", tokenExtractor, blogFinder, async (req, res) => {
   const { likes } = req.body;
 
   if (!likes) {

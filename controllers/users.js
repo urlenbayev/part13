@@ -1,5 +1,5 @@
 import express from "express";
-import { User, Blog, Reading } from "../models/index.js";
+import { User, Blog, Reading, Session } from "../models/index.js";
 import { userFinder, tokenExtractor } from "../middleware/middleware.js";
 import bcrypt from "bcrypt";
 const router = express.Router();
@@ -120,6 +120,7 @@ router.post("/", async (req, res) => {
     password_hash: passwordHash,
   };
   const addedUser = await User.create(newUser);
+  // eslint-disable-next-line no-unused-vars
   const { password_hash, ...result } = addedUser.dataValues;
   return res.status(201).json(result);
 });

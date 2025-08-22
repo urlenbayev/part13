@@ -34,6 +34,10 @@ const User = db.define(
         notEmpty: true,
       },
     },
+    banned: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     updatedAt: "updated_at",

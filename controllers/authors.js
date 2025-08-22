@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 import { Blog } from "../models/index.js";
 import sequelize from "../utils/db.js";
+import { tokenExtractor } from "../middleware/middleware.js";
 /**
 |--------------------------------------------------
 GET http://localhost:3001/api/authors
@@ -31,7 +32,7 @@ Example data
 ]
 |--------------------------------------------------
 */
-router.get("/", async (req, res) => {
+router.get("/", tokenExtractor, async (req, res) => {
   const rows = await Blog.findAll({
     attributes: [
       "author",
